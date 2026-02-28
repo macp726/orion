@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador de Menú Semanal - Doll House (v3)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.95em;
+        }
+
+        select {
+            padding: 12px 16px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        select:hover {
+            border-color: #764ba2;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        /* Layout principal: menú + lista de compras */
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .meal-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .meal-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meal-icon {
+            font-size: 1.8em;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .option-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .option-text {
+            color: #333;
+            font-size: 0.95em;
+            line-height: 1.6;
+            padding-right: 35px;
+        }
+
+        .option:hover .option-text {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .day-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tip-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        .tip-box strong {
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .emoji-large {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select {
+                min-width: 100%;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+
+            .meal-card {
+                padding: 18px;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        /* Sidebar lista de compras */
+        .shopping-sidebar {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .shopping-sidebar h2 {
+            font-size: 1.3em;
+            color: #4f46e5;
+            margin-bottom: 8px;
+        }
+
+        .shopping-sidebar p {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .chip {
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.8em;
+            border: 1px solid #c7d2fe;
+            background: white;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.15s ease-out;
+        }
+
+        .chip.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: white;
+        }
+
+        .shopping-list {
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #e5e7eb;
+            font-size: 0.9em;
+        }
+
+        .shopping-item:last-child {
+            border-bottom: none;
+        }
+
+        .shopping-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+
+        .shopping-name {
+            flex: 1;
+            color: #374151;
+        }
+
+        .shopping-summary {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .shopping-tip {
+            font-size: 0.8em;
+            color: #4f46e5;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥗 Planificador de Menú Semanal</h1>
+            <p>Alimentación Inteligente - Doll House Spa</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="daySelect">Selecciona un día:</label>
+                <select id="daySelect">
+                    <option value="">-- Elige el día --</option>
+                    <option value="lunes">Lunes</option>
+                    <option value="martes">Martes</option>
+                    <option value="miercoles">Miércoles</option>
+                    <option value="jueves">Jueves</option>
+                    <option value="viernes">Viernes</option>
+                    <option value="sabado">Sábado</option>
+                    <option value="domingo">Domingo</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="mealSelect">Selecciona la comida:</label>
+                <select id="mealSelect">
+                    <option value="">-- Elige la comida --</option>
+                    <option value="desayuno">☕ Desayuno</option>
+                    <option value="almuerzo">🍲 Almuerzo</option>
+                    <option value="cena">🌙 Cena</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="layout">
+                <div>
+                    <div id="result"></div>
+                </div>
+                <aside class="shopping-sidebar" aria-label="Lista de compras inteligente">
+                    <h2>🛒 Lista de compras inteligente</h2>
+                    <p>
+                        Organiza tu mercado por categorías basadas en la guía Doll House:
+                        marca lo que ya tienes o lo que necesitas comprar.
+                    </p>
+                    <div class="chip-row" id="categoryChips"></div>
+                    <p class="shopping-summary" id="categorySummary"></p>
+                    <div class="shopping-list" id="shoppingList"></div>
+                    <p class="shopping-tip">
+                        Tip: Haz captura de pantalla de cada categoría antes de ir al mercado 📸
+                    </p>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const menuData = {
+            semana1: {
+                lunes: {
+                    desayuno: [
+                        "Avena cocida en leche de arroz con canela y manzana picada + huevos escalfados",
+                        "Huevos revueltos con tomate y cebolla + bebida vegetal caliente",
+                        "Arepa de yuca con huevo cocido + lonja de queso campesino + fruta"
+                    ],
+                    almuerzo: [
+                        "Pechuga a la plancha + batata + ensalada de hojas verdes, tomates, zanahoria, pepino",
+                        "Pollo al horno con cúrcuma y limón + arroz parbolizado + ensalada de espinaca",
+                        "Filete de res + papa criolla + ensalada fresca con aguacate"
+                    ],
+                    cena: [
+                        "Caldo de pollo + huevo cocido",
+                        "Proteína en polvo con colágeno y resveratrol",
+                        "Crema de calabaza con leche de coco"
+                    ]
+                },
+                martes: {
+                    desayuno: [
+                        "Huevos pericos + Parfait con yogur vegetal sin azúcar, frutos rojos y semillas de chía",
+                        "Smoothie de proteína con resveratrol, banano, mantequilla de almendras + pechuga de pollo",
+                        "Tazón de avena cocida con leche de arroz, canela, manzana + huevos duros"
+                    ],
+                    almuerzo: [
+                        "Arroz + carne asada + vegetales salteados",
+                        "Tilapia al vapor + batata horneada con tomillo + ensalada de rúgula",
+                        "Pechuga de pollo al limón + arroz parbolizado + ensalada de espinaca"
+                    ],
+                    cena: [
+                        "Ensalada con atún, aguacate, tomate y aceite de oliva",
+                        "Sopa de garbanzos con zanahoria rallada y espárragos",
+                        "Caldo de alitas + aguacate"
+                    ]
+                },
+                miercoles: {
+                    desayuno: [
+                        "Arepa de maíz pelado con aguacate + huevo cocido",
+                        "Arepa de yuca con guacamole + huevo cocido en rodajas",
+                        "Arepa de arroz con huevo revuelto en ghee + bebida vegetal caliente"
+                    ],
+                    almuerzo: [
+                        "Quinoa + pollo al curry suave + ensalada multicolor",
+                        "Pollo al curry con leche de coco + arroz + esparragos salteados",
+                        "Churrasco a la plancha + quinoa + ensalada de lechuga romana"
+                    ],
+                    cena: [
+                        "Caldo de carne o caldo de pollo con verduras + porcion de aguacate",
+                        "Crema de espinaca y coliflor + huevo pochado",
+                        "Sopa de calabaza y zanahoria + verduras salteadas en ghee"
+                    ]
+                },
+                jueves: {
+                    desayuno: [
+                        "Proteína con resveratrol (vaso) + 2 huevos cocidos + lonja de queso campesino + fruta",
+                        "Pancake de yuca + mantequilla de almendras + fruta",
+                        "Parfait vegetal con yogur sin azúcar, frutos rojos, chía, nueces"
+                    ],
+                    almuerzo: [
+                        "Tilapia al horno con arroz parbolizado y ensalada fresca",
+                        "Filete de salmón con limón + arroz parbolizado + ensalada de kale",
+                        "Pollo al ajillo + tajadas de platano + ensalada de rúgula"
+                    ],
+                    cena: [
+                        "Ensalada tibia de vegetales salteados con huevo cocido",
+                        "Caldo de alitas + aguacate",
+                        "Ensalada de espinaca + queso feta + nueces + aguacate + huevo pochado"
+                    ]
+                },
+                viernes: {
+                    desayuno: [
+                        "Pancake de yuca + mantequilla de almendras + 1 fruta",
+                        "Tostadas de plátano verde con hummus de remolacha y huevo duro",
+                        "Arepa de arroz con huevo revuelto + bebida vegetal caliente"
+                    ],
+                    almuerzo: [
+                        "Churrasco + batata + ensalada con aguacate",
+                        "Fillete de salmón con limón + arroz parbolizado + ensalada fresca",
+                        "Pollo salteado + arroz blanco + vegetales al wok"
+                    ],
+                    cena: [
+                        "Tortilla vegetal o pechuga a la plancha",
+                        "Ensalada de espinaca + queso feta + nueces + aguacate + huevo pochado",
+                        "Sopa de lentejas con carne en cuadritos"
+                    ]
+                },
+                sabado: {
+                    desayuno: [
+                        "Yogur griego sin dulce + nueces + fresa picada + huevos batidos",
+                        "Tostadas de harina de arroz con pure de guacamole y huevo cocido",
+                        "Tazón de avena con leche de arroz, canela, manzana + nueces"
+                    ],
+                    almuerzo: [
+                        "Pollo salteado + arroz blanco + vegetales al wok",
+                        "Pasta de arroz con salmón + ensalada de espinaca",
+                        "Bistec a caballo + arepa de arroz + ensalada de rúgula"
+                    ],
+                    cena: [
+                        "Aguacate + huevo escalfado",
+                        "Tortilla de espinaca con queso vegetal + ensalada tibia",
+                        "Carne en juliana salteada con tiras de zanahoria y tomates"
+                    ]
+                },
+                domingo: {
+                    desayuno: [
+                        "Arepa de arroz + 2 huevos al gusto + bebida vegetal caliente",
+                        "Arepa de yuca + huevos revueltos en aceite de oliva + bebida vegetal",
+                        "Pancakes de avena y banano con miel natural y canela"
+                    ],
+                    almuerzo: [
+                        "Filete de pescado + papa criolla + ensalada crujiente",
+                        "Trucha al horno con especias + batata en fosforos + ensalada fresca",
+                        "Res magra asada + pure de platano + ensalada de kale"
+                    ],
+                    cena: [
+                        "Carne asada o en bistec + guacamole (aguacate + cilantro + aceite de oliva + limon y sal)",
+                        "Pescado sudado",
+                        "Caldo de verduras + huevo cocido + té relajante"
+                    ]
+                }
+            }
+        };
+
+        const mealIcons = {
+            desayuno: "☕",
+            almuerzo: "🍲",
+            cena: "🌙"
+        };
+
+        const dayNames = {
+            lunes: "Lunes",
+            martes: "Martes",
+            miercoles: "Miércoles",
+            jueves: "Jueves",
+            viernes: "Viernes",
+            sabado: "Sábado",
+            domingo: "Domingo"
+        };
+
+        const tips = {
+            lunes: "💡 Comienza el día con un vaso de agua con limón o vinagre. Respira profundo antes de cada comida.",
+            martes: "💡 Come lento, sin celular, masticando bien. No mezcles frutas en una sola comida.",
+            miercoles: "💡 Prepara tus meriendas para no improvisar. Come fruta sola con el estómago vacío.",
+            jueves: "💡 Si tienes ansiedad, prueba una infusión de canela. El jengibre ayuda a reducir inflamación.",
+            viernes: "💡 Cena temprano para dormir mejor. Recuerda que puedes reemplazar tu cena por proteína con resveratrol.",
+            sabado: "💡 El fin de semana no es excusa para sabotearte. Ámalo también en sábado.",
+            domingo: "💡 Hoy cierras tu semana. Lo lograste. Vas en camino hacia una versión más saludable de ti."
+        };
+
+        // --- LISTA DE COMPRAS INTELIGENTE ---
+        const shoppingData = {
+            proteinas: {
+                nombre: "Proteínas de alta calidad",
+                descripcion: "Huevos, carnes magras, pescados, legumbres y proteína en polvo limpia.",
+                items: [
+                    "Huevos (con yema)",
+                    "Pechuga de pollo / pollo de campo",
+                    "Pescados grasos (salmón, sardinas, atún, trucha)",
+                    "Carne de res magra alimentada con pasto",
+                    "Pavo",
+                    "Vísceras (hígado)",
+                    "Mariscos (camarones, mejillones, etc.)",
+                    "Lentejas",
+                    "Garbanzos",
+                    "Quinua",
+                    "Tofu o tempeh (si es orgánico)",
+                    "Proteína en polvo aislada sin aditivos"
+                ]
+            },
+            vegetales: {
+                nombre: "Vegetales y hojas verdes",
+                descripcion: "Base de tus platos: muchas hojas verdes y colores.",
+                items: [
+                    "Espinaca",
+                    "Acelga",
+                    "Rúgula",
+                    "Lechuga romana o crespa",
+                    "Kale",
+                    "Brócoli",
+                    "Coliflor",
+                    "Repollo blanco y morado",
+                    "Espárragos",
+                    "Apio",
+                    "Pepino",
+                    "Zucchini / calabacín",
+                    "Berenjena",
+                    "Tomate",
+                    "Zanahoria",
+                    "Remolacha",
+                    "Cebolla blanca y morada",
+                    "Ajo",
+                    "Jengibre fresco",
+                    "Pimentón (rojo / amarillo)",
+                    "Champiñones"
+                ]
+            },
+            carbohidratos: {
+                nombre: "Carbohidratos de buena calidad",
+                descripcion: "Fuentes con carga glucémica baja o media.",
+                items: [
+                    "Batata / camote",
+                    "Yuca",
+                    "Plátano verde",
+                    "Arroz blanco / parbolizado",
+                    "Arroz integral",
+                    "Quinua",
+                    "Avena integral",
+                    "Papa criolla",
+                    "Harina de arroz",
+                    "Arepas de maíz pelado",
+                    "Arepas de yuca o de arroz",
+                    "Pasta de arroz",
+                    "Granola artesanal sin azúcar",
+                    "Frutas de bajo índice glucémico (manzana verde, frutos rojos, ciruela, papaya, fresa)",
+                    "Banano (para batidos o pancakes)"
+                ]
+            },
+            grasas: {
+                nombre: "Grasas saludables",
+                descripcion: "Clave para hormonas, saciedad y salud de piel y cerebro.",
+                items: [
+                    "Aguacate",
+                    "Aceite de oliva extra virgen",
+                    "Aceite de coco",
+                    "Ghee (mantequilla clarificada)",
+                    "Semillas de chía",
+                    "Semillas de linaza",
+                    "Semillas de cáñamo",
+                    "Nueces",
+                    "Almendras",
+                    "Avellanas",
+                    "Mantequilla de almendras o maní natural",
+                    "Pescado azul",
+                    "Yema de huevo"
+                ]
+            },
+            snacks: {
+                nombre: "Snacks recomendados",
+                descripcion: "Para media mañana o media tarde, solo si realmente lo necesitas.",
+                items: [
+                    "Chocolate oscuro (85% cacao o más)",
+                    "Mix de frutos secos (almendras, nueces, avellanas)",
+                    "Yogur griego natural sin azúcar",
+                    "Parfaits con fruta y semillas",
+                    "Batidos con proteína limpia y fruta",
+                    "Chips de kale",
+                    "Chips de zucchini",
+                    "Chips de coco",
+                    "Bastones de zanahoria",
+                    "Bastones de pepino",
+                    "Hummus (tradicional o de remolacha)"
+                ]
+            },
+            bebidas: {
+                nombre: "Bebidas naturales recomendadas",
+                descripcion: "Apoyan hidratación, digestión y proceso antiinflamatorio.",
+                items: [
+                    "Agua filtrada",
+                    "Agua con limón",
+                    "Infusión de jengibre, cúrcuma y limón",
+                    "Té verde o matcha",
+                    "Agua con vinagre de manzana (orgánico, con la madre)",
+                    "Infusión de canela en rama",
+                    "Té de menta",
+                    "Té de manzanilla",
+                    "Té de anís",
+                    "Jugos verdes (espinaca, pepino, apio, limón, manzana verde)",
+                    "Batidos de proteína limpia con agua o bebida vegetal",
+                    "Agua con semillas de chía",
+                    "Agua mineral con gas + limón o hierbas frescas"
+                ]
+            }
+        };
+
+        const categoryOrder = ["proteinas", "vegetales", "carbohidratos", "grasas", "snacks", "bebidas"];
+        let activeCategory = "proteinas";
+
+        const categoryChips = document.getElementById("categoryChips");
+        const shoppingList = document.getElementById("shoppingList");
+        const categorySummary = document.getElementById("categorySummary");
+
+        function renderCategoryChips() {
+            categoryChips.innerHTML = "";
+            categoryOrder.forEach(key => {
+                const data = shoppingData[key];
+                const chip = document.createElement("button");
+                chip.type = "button";
+                chip.className = "chip" + (key === activeCategory ? " active" : "");
+                chip.textContent = data.nombre.split(" ")[0];
+                chip.addEventListener("click", () => {
+                    activeCategory = key;
+                    renderCategoryChips();
+                    renderShoppingList();
+                });
+                categoryChips.appendChild(chip);
+            });
+        }
+
+        function renderShoppingList() {
+            const { nombre, descripcion, items } = shoppingData[activeCategory];
+            categorySummary.textContent = `${nombre}: ${descripcion}`;
+            shoppingList.innerHTML = "";
+
+            items.forEach(item => {
+                const row = document.createElement("label");
+                row.className = "shopping-item";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+
+                const nameSpan = document.createElement("span");
+                nameSpan.className = "shopping-name";
+                nameSpan.textContent = item;
+
+                row.appendChild(checkbox);
+                row.appendChild(nameSpan);
+
+                shoppingList.appendChild(row);
+            });
+        }
+
+        function displayMeal() {
+            const day = document.getElementById('daySelect').value;
+            const meal = document.getElementById('mealSelect').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!day || !meal) {
+                resultDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="emoji-large">🍽️</div>
+                        <p>Selecciona un día y una comida para ver las opciones</p>
+                        <p style="font-size: 0.9em; color: #bbb;">Tienes 3 opciones deliciosas para elegir cada día</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const options = menuData.semana1[day][meal];
+            const tip = tips[day];
+
+            let html = `
+                <div class="day-name">${dayNames[day]} - ${mealIcons[meal]} ${meal.charAt(0).toUpperCase() + meal.slice(1)}</div>
+                <div class="options-container">
+            `;
+
+            options.forEach((option, index) => {
+                html += `
+                    <div class="option">
+                        <div class="option-number">${index + 1}</div>
+                        <div class="option-text">${option}</div>
+                        <span class="badge">Opción ${index + 1}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+                <div class="tip-box">
+                    <strong>💚 Consejo del día:</strong> ${tip}
+                </div>
+            `;
+
+            resultDiv.innerHTML = html;
+        }
+
+        document.getElementById('daySelect').addEventListener('change', displayMeal);
+        document.getElementById('mealSelect').addEventListener('change', displayMeal);
+
+        // Display initial states
+        displayMeal();
+        renderCategoryChips();
+        renderShoppingList();
+    </script>
+</body>
+</html>
