@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Servicios Homeopáticos - Resumen</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --primary: #2457a7;
+      --danger: #c0392b;
+      --warning: #f39c12;
+      --success: #27ae60;
+      --text-main: #222222;
+      --text-muted: #666666;
+      --border-radius: 10px;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.7rem;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .info-box {
+      background: #e9f0ff;
+      border-left: 4px solid var(--primary);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 220px;
+      flex: 1;
+    }
+
+    .filter-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 7px 9px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #d0d4e4;
+      background: #ffffff;
+      outline: none;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(36, 87, 167, 0.15);
+    }
+
+    .legend {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .badge.pbs {
+      background: var(--success);
+    }
+    .badge.no-pbs {
+      background: var(--danger);
+    }
+    .badge.depende {
+      background: var(--warning);
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 14px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .cups {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .cups strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .card-body {
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
+    .card-body p {
+      margin: 0 0 6px;
+    }
+
+    .card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 2px;
+    }
+
+    .toggle-btn {
+      border: none;
+      background: transparent;
+      color: var(--primary);
+      font-size: 0.8rem;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .toggle-btn:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .no-results {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding-inline: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Servicios terapéuticos de enfoque homeopático</h1>
+      <p>
+        Resumen de cobertura, observaciones y códigos CUPS (cuando aplican) para
+        tecnologías de tipo homeopático y afines.
+      </p>
+    </header>
+
+    <div class="info-box">
+      De acuerdo con lo solicitado, se presenta la información relacionada con la
+      cobertura en PBS/UPC, observaciones clínicas y la existencia o no de
+      códigos CUPS propios para cada tecnología.
+    </div>
+
+    <section class="filters">
+      <div class="filter-group">
+        <label for="search">Buscar por servicio / tecnología</label>
+        <input
+          type="text"
+          id="search"
+          placeholder="Ej. homeopatía, terapia láser..."
+        />
+      </div>
+      <div class="filter-group">
+        <label for="coverage">Filtrar por cobertura</label>
+        <select id="coverage">
+          <option value="todas">Todas las coberturas</option>
+          <option value="PBS UPC">PBS UPC</option>
+          <option value="NO PBS UPC">NO PBS UPC</option>
+          <option value="Depende">Depende del procedimiento / medicamento</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="legend">
+      <span><strong>Leyenda cobertura:</strong></span>
+      <span><span class="badge no-pbs">NO PBS UPC</span> No financiado con UPC</span>
+      <span><span class="badge pbs">PBS UPC</span> Financiado con UPC</span>
+      <span><span class="badge depende">Depende</span> Depende de terapia / medicamento específico</span>
+    </div>
+
+    <section id="cardsContainer" class="cards-container"></section>
+    <div id="noResults" class="no-results hidden">
+      No se encontraron tecnologías con los criterios de búsqueda seleccionados.
+    </div>
+  </div>
+
+  <script>
+  const data = [
+    {
+      servicio: "HOMEOSINIATRIA",
+      cobertura: "NO PBS UPC",
+      observacion:
+        "Corresponde a una combinación de acupuntura (financiada) y homeopatía (no incluida en la Resolución 2765 de 2025). En consecuencia, no se encuentra financiada con recursos de la UPC, por lo que su autorización sólo sería procedente con cargo a MIPRES en modalidad recobrante, en el marco del cumplimiento del fallo de tutela si aplicara.",
+      cups: "No cuenta con CUPS"
+    },
+    {
+      servicio: "MEDICINA BIOLÓGICA",
+      cobertura: "Depende del procedimiento y medicamento a aplicar",
+      observacion:
+        "La prescripción de medicina biológica debe realizarse de forma específica, incluyendo diagnóstico, tipo de terapia, medicamento, dosis, vía, duración y justificación clínica, con el fin de permitir la evaluación de pertinencia y cobertura.<br><br>La medicina biológica es un término general que no define por sí mismo la cobertura en el PBS, la cual depende del medicamento específico, su indicación y evidencia de uso.<br><br>En la mayoría de los casos, estos productos no hacen parte de las intervenciones estándar ni se encuentran incluidos en el PBS con cargo a la UPC. Por lo tanto, su financiación no corresponde a la UPC y, de requerirse, debe gestionarse por mecanismos excepcionales como MIPRES o por orden judicial.",
+      cups: "No cuenta con CUPS"
+    },
+    {
+      servicio: "HOMEOPATÍA",
+      cobertura: "NO PBS UPC",
+      observacion:
+        "La homeopatía corresponde a un sistema terapéutico alternativo que no hace parte de las intervenciones estándar basadas en evidencia ni se encuentra incluida de forma explícita dentro del Plan de Beneficios en Salud (PBS) con cargo a la UPC.<br><br>Adicionalmente, agrupa diversas corrientes (unicista, pluralista, complejista, homotoxicología), por lo cual requiere especificación clara del tipo de terapia y del producto a utilizar para su adecuada evaluación.<br><br>En consecuencia, su financiación no corresponde a la UPC y, de considerarse necesario, debe gestionarse por mecanismos excepcionales como MIPRES o en cumplimiento de orden judicial.",
+      cups: "No cuenta con CUPS"
+    },
+    {
+      servicio: "SUEROTERAPIA",
+      cobertura: "NO PBS UPC",
+      observacion:
+        "No está contemplada en el PBS; catalogada como terapia alternativa sin respaldo técnico suficiente.",
+      cups: "No cuenta con CUPS"
+    },
+    {
+      servicio: "TERAPIA LÁSER",
+      cobertura: "NO PBS UPC",
+      observacion:
+        "La terapia láser de baja intensidad no se encuentra incluida de manera explícita dentro del Plan de Beneficios en Salud (PBS) con cargo a la UPC, dado que no hace parte de las intervenciones estándar ni de primera línea para el manejo de las patologías en las que se indica. Adicionalmente, la evidencia disponible es limitada y la posiciona como una terapia complementaria o adyuvante, más no esencial dentro del tratamiento.<br><br>Por lo anterior, su financiación no corresponde a la UPC y, en caso de requerirse, debe gestionarse a través de mecanismos como MIPRES con la debida justificación clínica.",
+      cups: "No cuenta con CUPS"
+    },
+    {
+      servicio: "TERAPIA NEURAL",
+      cobertura: "PBS UPC",
+      observacion:
+        "Se encuentra financiada con recursos de la UPC, todos los procedimientos neuralterapeúticos.",
+      cups: "999402 - 999401"
+    }
+  ];
+
+  function limpiarObservacion(texto) {
+    // Elimina cualquier combinación de <br> o <br/> repetida
+    return texto.replace(/<br\s*\/?>\s*<br\s*\/?>/gi, " ").trim();
+  }
+
+  function getCoverageBadgeClass(cobertura) {
+    const normalized = cobertura.toLowerCase();
+    if (normalized.startsWith("no pbs")) return "no-pbs";
+    if (normalized.startsWith("pbs")) return "pbs";
+    return "depende";
+  }
+
+  function getCoverageBadgeText(cobertura) {
+    const normalized = cobertura.toLowerCase();
+    if (normalized.startsWith("no pbs")) return "NO PBS UPC";
+    if (normalized.startsWith("pbs")) return "PBS UPC";
+    return "Depende";
+  }
+
+  function renderCards(list) {
+    const container = document.getElementById("cardsContainer");
+    const noResults = document.getElementById("noResults");
+    container.innerHTML = "";
+
+    if (!list.length) {
+      noResults.classList.remove("hidden");
+      return;
+    } else {
+      noResults.classList.add("hidden");
+    }
+
+    list.forEach((item, index) => {
+      const card = document.createElement("article");
+      card.className = "card";
+
+      const coverageClass = getCoverageBadgeClass(item.cobertura);
+      const coverageText = getCoverageBadgeText(item.cobertura);
+
+      // Usamos la observación sin <br><br>
+      const obsLimpia = limpiarObservacion(item.observacion);
+      const isLongText = obsLimpia.length > 350;
+      const shortText = isLongText
+        ? obsLimpia.slice(0, 320) + "..."
+        : obsLimpia;
+
+      let bodyHTML = `
+        <div class="card-body">
+          <p><strong>Observación:</strong></p>
+      `;
+
+      if (isLongText) {
+        bodyHTML += `
+          <p id="obs-short-${index}">${shortText}</p>
+          <p id="obs-full-${index}" class="hidden">${obsLimpia}</p>
+        `;
+      } else {
+        // Solo un párrafo, sin duplicar
+        bodyHTML += `
+          <p id="obs-full-${index}">${obsLimpia}</p>
+        `;
+      }
+
+      bodyHTML += `</div>`;
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div>
+            <div class="card-title">${item.servicio}</div>
+            <div class="cups">
+              <strong>CUPS:</strong> ${item.cups}
+            </div>
+          </div>
+          <span class="badge ${coverageClass}" title="${item.cobertura}">
+            ${coverageText}
+          </span>
+        </div>
+        ${bodyHTML}
+        ${
+          isLongText
+            ? `<div class="card-footer">
+                <button class="toggle-btn" data-index="${index}">
+                  Ver más ▾
+                </button>
+              </div>`
+            : ""
+        }
+      `;
+
+      container.appendChild(card);
+    });
+
+    attachToggleEvents();
+  }
+
+  function attachToggleEvents() {
+    const buttons = document.querySelectorAll(".toggle-btn");
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const index = btn.getAttribute("data-index");
+        const shortEl = document.getElementById("obs-short-" + index);
+        const fullEl = document.getElementById("obs-full-" + index);
+        const isExpanded = !fullEl.classList.contains("hidden");
+
+        if (isExpanded) {
+          fullEl.classList.add("hidden");
+          shortEl.classList.remove("hidden");
+          btn.textContent = "Ver más ▾";
+        } else {
+          fullEl.classList.remove("hidden");
+          shortEl.classList.add("hidden");
+          btn.textContent = "Ver menos ▴";
+        }
+      });
+    });
+  }
+
+  function applyFilters() {
+    const searchValue = document
+      .getElementById("search")
+      .value.toLowerCase()
+      .trim();
+    const coverageValue = document.getElementById("coverage").value;
+
+    const filtered = data.filter((item) => {
+      const textoPlano = limpiarObservacion(item.observacion).toLowerCase();
+      const matchesSearch =
+        item.servicio.toLowerCase().includes(searchValue) ||
+        textoPlano.includes(searchValue);
+
+      let matchesCoverage = true;
+      if (coverageValue === "PBS UPC") {
+        matchesCoverage = item.cobertura.toLowerCase().startsWith("pbs");
+      } else if (coverageValue === "NO PBS UPC") {
+        matchesCoverage = item.cobertura.toLowerCase().startsWith("no pbs");
+      } else if (coverageValue === "Depende") {
+        matchesCoverage = item.cobertura
+          .toLowerCase()
+          .startsWith("depende");
+      }
+
+      return matchesSearch && matchesCoverage;
+    });
+
+    renderCards(filtered);
+  }
+
+  document.getElementById("search").addEventListener("input", applyFilters);
+  document
+    .getElementById("coverage")
+    .addEventListener("change", applyFilters);
+
+  renderCards(data);
+</script>
+</body>
+</html>
