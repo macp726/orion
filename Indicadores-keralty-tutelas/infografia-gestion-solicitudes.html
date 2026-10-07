@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Infografía interactiva sobre solicitudes, capacidad de gestión, seguimiento y oportunidades de mejora.">
+  <title>Solicitudes vs. gestión</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #173345;
+      --muted: #617681;
+      --paper: #f1f6f7;
+      --line: #dce7e9;
+      --teal: #087f83;
+      --teal-pale: #e6f5f1;
+      --blue: #3268a6;
+      --amber: #a75e0b;
+      --amber-pale: #fff3df;
+      --red: #b63c3c;
+      --red-pale: #fff0ed;
+      --violet: #704e9d;
+      --white: #fff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 5% 0%, #dff2ed 0, transparent 31rem), var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    .page { width: min(1240px, calc(100% - 36px)); margin: 0 auto; padding: 16px 0 12px; }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 140px;
+      padding: 24px 30px;
+      border-radius: 22px;
+      background: #14364a;
+      color: white;
+    }
+    .eyebrow { margin: 0 0 5px; color: #a7e2d8; font-size: .72rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1.04; letter-spacing: -.045em; }
+    .hero-copy { max-width: 710px; margin: 8px 0 0; color: #d4e4e9; font-size: .96rem; }
+    .hero-side { display: grid; flex: none; justify-items: end; gap: 8px; }
+    .target { padding: 9px 13px; border: 1px solid #6e9a9b; border-radius: 12px; background: #1c4858; color: #f3ffff; font-size: .8rem; font-weight: 750; }
+    .print { padding: 6px 4px; border: 0; background: transparent; color: #bbd9dd; font: inherit; font-size: .77rem; font-weight: 700; cursor: pointer; }
+    .print:hover { color: white; text-decoration: underline; }
+
+    .section { margin-top: 13px; }
+    .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 20px; margin: 0 0 9px; }
+    .section-title h2 { margin: 0; font-size: 1.08rem; letter-spacing: -.02em; }
+    .section-title p { margin: 0; color: var(--muted); font-size: .78rem; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .metric { display: grid; grid-template-columns: 1fr auto; align-items: center; min-height: 85px; padding: 12px 15px; border: 1px solid var(--line); border-radius: 15px; background: var(--white); }
+    .metric-label { color: var(--muted); font-size: .7rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
+    .metric strong { grid-row: 2; font-size: 1.75rem; line-height: 1; letter-spacing: -.045em; }
+    .metric small { grid-column: 2; grid-row: 1 / span 2; max-width: 120px; color: var(--muted); font-size: .72rem; text-align: right; }
+    .metric.alert strong { color: var(--red); }
+    .metric.warm strong { color: var(--amber); }
+    .metric.green strong { color: var(--teal); }
+
+    .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .phase { position: relative; min-height: 123px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--white); }
+    .phase:not(:last-child)::after { position: absolute; z-index: 2; top: 16px; right: -20px; display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: white; color: var(--teal); content: "→"; font-weight: 900; }
+    .phase-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .phase-num { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 8px; background: #e9f1fb; color: var(--blue); font-size: .75rem; font-weight: 900; }
+    .phase h3 { margin: 0; font-size: .88rem; }
+    .phase p { margin: 0; color: #536b76; font-size: .76rem; }
+    .phase p strong { color: var(--teal); }
+    .phase:nth-child(2) .phase-num { background: var(--teal-pale); color: var(--teal); }
+    .phase:nth-child(3) .phase-num { background: var(--amber-pale); color: var(--amber); }
+
+    .channels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .channel { display: flex; flex-direction: column; min-height: 214px; padding: 15px 16px; border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: 16px; background: var(--white); }
+    .channel.konector { border-top-color: var(--amber); }
+    .channel.conectados { border-top-color: #89949c; }
+    .channel-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .channel h3 { margin: 0; font-size: .95rem; }
+    .channel-sub { margin: 2px 0 0; color: var(--muted); font-size: .7rem; }
+    .badge { flex: none; padding: 4px 7px; border-radius: 999px; background: var(--teal-pale); color: #176b66; font-size: .63rem; font-weight: 850; text-transform: uppercase; }
+    .badge.legacy { background: #eef0f2; color: #596872; }
+    .stats { display: flex; flex-wrap: wrap; gap: 6px; margin: 11px 0 8px; }
+    .stats span { padding: 4px 7px; border-radius: 7px; background: #f0f4f5; color: #405c68; font-size: .68rem; font-weight: 750; }
+    .channel-copy { margin: 0; color: #536b76; font-size: .76rem; }
+    .improvement { margin-top: auto; padding-top: 9px; }
+    .improvement strong { display: block; margin-bottom: 2px; color: var(--teal); font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; }
+    .konector .improvement strong { color: var(--amber); }
+    .conectados .improvement strong { color: #5d6b73; }
+    .improvement p { margin: 0; color: #405c62; font-size: .75rem; }
+    .channel-more { align-self: flex-start; margin-top: 5px; padding: 3px 0; border: 0; background: transparent; color: var(--blue); font: inherit; font-size: .7rem; font-weight: 800; cursor: pointer; }
+    .channel-more:hover { text-decoration: underline; }
+
+    .bottom { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
+    .master, .risk { min-height: 91px; padding: 14px 17px; border-radius: 15px; }
+    .master { display: flex; align-items: center; gap: 15px; background: #183f52; color: white; }
+    .master-count { font-size: 2.2rem; font-weight: 900; line-height: .9; letter-spacing: -.05em; }
+    .master h3, .risk h3 { margin: 0 0 3px; font-size: .87rem; }
+    .master p { margin: 0; color: #d0e0e4; font-size: .73rem; }
+    .master button { flex: none; margin-left: auto; padding: 6px 9px; border: 1px solid #7ba1a9; border-radius: 8px; background: transparent; color: white; font: inherit; font-size: .68rem; font-weight: 750; cursor: pointer; }
+    .risk { border: 1px solid #f0d7d2; background: var(--red-pale); }
+    .risk h3 { color: #922f32; }
+    .risk p { margin: 0; color: #744c4c; font-size: .74rem; }
+    .footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; color: var(--muted); font-size: .66rem; }
+
+    dialog { width: min(680px, calc(100% - 28px)); max-height: min(78vh, 760px); padding: 0; overflow: auto; border: 0; border-radius: 20px; background: white; color: var(--ink); box-shadow: 0 24px 80px rgba(12, 34, 46, .28); }
+    dialog::backdrop { background: rgba(12, 34, 46, .58); backdrop-filter: blur(3px); }
+    .dialog-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 21px; border-bottom: 1px solid var(--line); background: white; }
+    .dialog-head h2 { margin: 0; font-size: 1.05rem; }
+    .close { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 10px; background: #f7f9fa; color: var(--ink); font: inherit; font-size: 1.15rem; cursor: pointer; }
+    .dialog-body { padding: 18px 22px 23px; }
+    .dialog-body h3 { margin: 18px 0 6px; font-size: .91rem; }
+    .dialog-body h3:first-child { margin-top: 0; }
+    .dialog-body p, .dialog-body li { color: #516974; font-size: .86rem; }
+    .dialog-body p { margin: 0 0 9px; }
+    .dialog-body ul { margin: 6px 0 0; padding-left: 19px; }
+    .dialog-body li + li { margin-top: 6px; }
+    .note { padding: 11px 13px; border-radius: 10px; background: #f2f6f7; color: #526a75; font-size: .78rem; }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 22px, 560px); padding-top: 11px; }
+      .hero { align-items: flex-start; flex-direction: column; gap: 12px; padding: 22px; }
+      .hero-side { display: flex; align-items: center; justify-items: start; flex-wrap: wrap; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .flow, .channels, .bottom { grid-template-columns: 1fr; }
+      .phase { min-height: 0; }
+      .phase:not(:last-child)::after { top: auto; right: 15px; bottom: -20px; transform: rotate(90deg); }
+      .channel { min-height: 0; }
+      .improvement { margin-top: 10px; }
+      .master { min-height: 98px; }
+      .section-title { align-items: flex-start; flex-direction: column; gap: 2px; }
+      .footer { flex-direction: column; }
+    }
+    @media print {
+      @page { size: A4 landscape; margin: 9mm; }
+      body { background: white; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .page { width: 100%; padding: 0; }
+      .print, .channel-more, .master button { display: none; }
+      dialog { display: none; }
+      .hero, .metric, .phase, .channel, .master, .risk { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Lectura ejecutiva · situación descrita</p>
+        <h1>Solicitudes vs. gestión</h1>
+        <p class="hero-copy">El volumen entrante supera la capacidad de los canales activos; además, hay casos sin acceso, sin asignación o sin seguimiento activo.</p>
+      </div>
+      <div class="hero-side">
+        <span class="target">Meta: responder en 5 días hábiles</span>
+        <button class="print" type="button" onclick="window.print()">Imprimir / guardar PDF</button>
+      </div>
+    </header>
+
+    <section class="section" aria-label="Volumen y capacidad diaria">
+      <div class="metrics">
+        <article class="metric"><span class="metric-label">Correo · ingreso</span><strong>≈300</strong><small>casos al día</small></article>
+        <article class="metric alert"><span class="metric-label">Correo · déficit</span><strong>180–240</strong><small>casos al día</small></article>
+        <article class="metric"><span class="metric-label">Konector · ingreso</span><strong>≈50</strong><small>casos al día</small></article>
+        <article class="metric warm"><span class="metric-label">Konector · déficit</span><strong>14–30</strong><small>casos al día</small></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="flow-title">
+      <div class="section-title"><h2 id="flow-title">Tres fases para ubicar cada caso</h2><p>Seguir el flujo permite medir dónde crece la cola.</p></div>
+      <div class="flow">
+        <article class="phase"><div class="phase-heading"><span class="phase-num">01</span><h3>Entrada y radicación</h3></div><p>Correo: cruce con base. Konector: radicación regional. Conectados: deprecado, pero aún recibe casos.<br><strong>Mejora:</strong> validar y deduplicar al ingresar.</p></article>
+        <article class="phase"><div class="phase-heading"><span class="phase-num">02</span><h3>Registro y asignación</h3></div><p>Consolidación manual en el Maestro; los priorizados también requieren ingreso manual.<br><strong>Mejora:</strong> asignar un responsable desde la radicación.</p></article>
+        <article class="phase"><div class="phase-heading"><span class="phase-num">03</span><h3>Gestión y seguimiento</h3></div><p>Retomar escalados al recibir respuesta de otra área y cerrar con respuesta al cliente.<br><strong>Mejora:</strong> registrar próxima acción y alertar vencimientos.</p></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="channels-title">
+      <div class="section-title"><h2 id="channels-title">Estado y mejora por canal</h2><p>Mejorar capacidad, acceso y continuidad de punta a punta.</p></div>
+      <div class="channels">
+        <article class="channel email">
+          <div class="channel-top"><div><h3>Correo electrónico</h3><p class="channel-sub">Nacional + Bogotá · canal activo</p></div><span class="badge">Activo</span></div>
+          <div class="stats"><span>≈1.000 sin gestionar</span><span>Capacidad 60–120/día</span></div>
+          <p class="channel-copy">Tres personas gestionan 20–40 casos cada una. Ingresan ≈300 al día; el déficit estimado es 180–240 diarios.</p>
+          <div class="improvement"><strong>Mejoras posibles</strong><p>Automatizar cruce y registro; deduplicar; medir primer alcance y ajustar capacidad según antigüedad y vencimiento.</p></div>
+          <button class="channel-more" type="button" data-dialog="email-detail">Ver análisis →</button>
+        </article>
+        <article class="channel konector">
+          <div class="channel-top"><div><h3>Konector</h3><p class="channel-sub">Oficinas regionales · canal activo</p></div><span class="badge">Activo</span></div>
+          <div class="stats"><span>≈300 activos</span><span>5 exgestores sin permisos</span></div>
+          <p class="channel-copy">Llegan ≈50 casos al día. Lina gestiona 20–36 y es la única con permisos activos; hay una cola creciente.</p>
+          <div class="improvement"><strong>Mejoras posibles</strong><p>Restaurar permisos y reasignar; nombrar respaldo antes de la ausencia prevista; distribuir la cola entre gestores.</p></div>
+          <button class="channel-more" type="button" data-dialog="konector-detail">Ver análisis →</button>
+        </article>
+        <article class="channel conectados">
+          <div class="channel-top"><div><h3>Conectados</h3><p class="channel-sub">Herramienta deprecada</p></div><span class="badge legacy">Retiro pendiente</span></div>
+          <div class="stats"><span>Sin gestión regular</span><span>Seguimientos abiertos</span></div>
+          <p class="channel-copy">Los casos nuevos se cierran con orientación, pero los seguimientos que quedan allí no tienen responsable.</p>
+          <div class="improvement"><strong>Mejoras posibles</strong><p>Migrar casos abiertos al Maestro con dueño y fecha; notificar canales vigentes y controlar redirección.</p></div>
+          <button class="channel-more" type="button" data-dialog="legacy-detail">Ver análisis →</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section bottom" aria-label="Seguimiento maestro y riesgo">
+      <article class="master">
+        <div class="master-count">672</div>
+        <div><h3>casos en seguimiento en el Maestro</h3><p>Esperan respuesta de otra área; sin seguimiento activo, según el relato.</p></div>
+        <button type="button" data-dialog="master-detail">Mejoras →</button>
+      </article>
+      <article class="risk">
+        <h3>Plazo y riesgo legal</h3>
+        <p>La falta de respuesta oportuna puede escalar a desacato. Revisar a diario los vencidos y próximos a vencer, priorizar riesgo legal y asignar responsable de cada escalamiento.</p>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <span>Fuente: descripcion-relato.md · las cifras son aproximadas.</span>
+      <span>No sumar las colas de 1.000, 300 y 672: describen estados/canales distintos y pueden incluir duplicados.</span>
+    </footer>
+  </main>
+
+  <dialog id="email-detail" aria-labelledby="email-title">
+    <div class="dialog-head"><h2 id="email-title">Correo · análisis y oportunidades</h2><button class="close" type="button" aria-label="Cerrar">×</button></div>
+    <div class="dialog-body">
+      <h3>Qué ocurre</h3>
+      <p>Una base de aproximadamente 300 usuarios radicadores se cruza a diario con los correos recibidos. Los correos identificados se radican en el Maestro para que los gestione el equipo de tres personas. Se reportan aproximadamente 300 casos radicados cada día.</p>
+      <p>Con 20–40 gestiones diarias por persona, la capacidad conjunta estimada es 60–120. Frente a 300 entradas, el déficit es de 180–240 casos al día. El acumulado informado es de 1.000 correos sin gestionar.</p>
+      <h3>Mejoras posibles</h3>
+      <ul><li>Automatizar el cruce con la base y registrar resultado y hora de cada etapa.</li><li>Detectar duplicados por identificador de solicitud, remitente y canal antes de crear otra fila.</li><li>Medir tiempo al primer alcance y antigüedad de la cola; dimensionar capacidad con esas tendencias.</li><li>Separar correos recibidos no radicados de los ya radicados pero aún sin asignación o gestión.</li></ul>
+    </div>
+  </dialog>
+
+  <dialog id="konector-detail" aria-labelledby="konector-title">
+    <div class="dialog-head"><h2 id="konector-title">Konector · acceso y continuidad</h2><button class="close" type="button" aria-label="Cerrar">×</button></div>
+    <div class="dialog-body">
+      <h3>Qué ocurre</h3>
+      <p>El relato indica aproximadamente 50 entradas nuevas al día y un acumulado de 300 casos activos. Lina puede gestionar entre 20 y 36 diarios. La brecha estimada de 14–30 por día supone que el volumen entrante y la capacidad reportada son comparables.</p>
+      <p>Cinco personas cambiaron de área; sus casos previamente asignados no pueden gestionarse por falta de permisos. Desde el 5 de octubre, Lina recibe solicitudes nuevas de todas las regionales. Es la única persona con permisos activos y tenía vacaciones previstas desde el 8 de octubre, según el relato.</p>
+      <h3>Mejoras posibles</h3>
+      <ul><li>Revisar inventario de asignados y restaurar acceso a los casos sin gestor disponible.</li><li>Formalizar reasignación con responsable y trazabilidad del cambio.</li><li>Confirmar respaldo con permisos antes de la ausencia prevista.</li><li>Balancear demanda y capacidad y reportar diariamente entradas, resueltos y antigüedad.</li></ul>
+    </div>
+  </dialog>
+
+  <dialog id="legacy-detail" aria-labelledby="legacy-title">
+    <div class="dialog-head"><h2 id="legacy-title">Conectados · cierre controlado del canal</h2><button class="close" type="button" aria-label="Cerrar">×</button></div>
+    <div class="dialog-body">
+      <h3>Qué ocurre</h3>
+      <p>La herramienta está deprecada, aunque siguen llegando casos. Los nuevos se cierran y se informa al cliente cuáles son los canales correctos. El relato también señala seguimientos alojados allí que nadie atiende.</p>
+      <h3>Mejoras posibles</h3>
+      <ul><li>Identificar y clasificar los seguimientos abiertos y asignarles un dueño en el Maestro.</li><li>Registrar la notificación al cliente y confirmar su recepción cuando aplique.</li><li>Redirigir nuevas solicitudes a los canales vigentes con un mensaje claro y verificable.</li><li>Definir una condición de cierre del canal cuando no queden pendientes ni nuevas entradas.</li></ul>
+    </div>
+  </dialog>
+
+  <dialog id="master-detail" aria-labelledby="master-title">
+    <div class="dialog-head"><h2 id="master-title">Maestro y equipo · mejoras de gestión</h2><button class="close" type="button" aria-label="Cerrar">×</button></div>
+    <div class="dialog-body">
+      <h3>Maestro: una cola que necesita próxima acción</h3>
+      <p>Los 672 casos informados están en espera de respuesta de otras áreas. Los estados de espera incluyen parametrización, visto bueno, CTC o cotización, entre otros. Si llega una respuesta, el caso debe volver a una persona que lo gestione.</p>
+      <ul><li>Consolidar entradas automáticamente; usar una clave única para detectar duplicados entre canales.</li><li>Mantener responsable, estado normalizado, última acción y próxima acción con fecha.</li><li>Alertar sobre casos sin asignar, sin movimiento y próximos a superar cinco días hábiles.</li><li>Reingresar respuestas recibidas a una cola accionable con responsable asignado.</li></ul>
+      <h3>Responsabilidades descritas</h3>
+      <ul><li><b>Lina:</b> gestiona Konector y actualiza estados.</li><li><b>Dianita, Adrianita e Ingrid:</b> reciben casos desde el Maestro y priorizados.</li><li><b>Kristel:</b> apoyo legal, cartas de exclusión, ingresos excepcionales y cierre de Conectados.</li><li><b>Edwin:</b> ingreso de casos, liberación de volantes, apoyo técnico-científico y casos especiales.</li><li><b>Be:</b> datos y calidad del Maestro, asignación diaria, consultas y reportes.</li><li><b>Lauris:</b> liderazgo, canalización de priorizados y apoyo técnico-científico/jurídico.</li></ul>
+      <h3>Conteos para revisar a diario</h3>
+      <p>Correos recibidos y tiempo al primer alcance; radicados; sin radicar; sin asignar; sin gestionar. Añadir antigüedad, responsable, canal, plazo, seguimientos vencidos y duplicados detectados.</p>
+      <div class="note">Las cifras de 1.000 correos, 300 casos de Konector y 672 en seguimiento corresponden a grupos distintos. El relato no aporta un corte único ni una deduplicación que permita sumarlas como total.</div>
+    </div>
+  </dialog>
+
+  <script>
+    document.querySelectorAll("[data-dialog]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const dialog = document.getElementById(button.dataset.dialog);
+        if (dialog instanceof HTMLDialogElement) dialog.showModal();
+      });
+    });
+    document.querySelectorAll("dialog .close").forEach((button) => {
+      button.addEventListener("click", () => button.closest("dialog")?.close());
+    });
+    document.querySelectorAll("dialog").forEach((dialog) => {
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+  </script>
+</body>
+</html>
